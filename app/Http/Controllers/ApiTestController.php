@@ -51,20 +51,38 @@ class ApiTestController extends Controller
             return "true";
         }
     }
-    public function getLike(Request $request) {
+    public function saveTask(Request $request) {
         // 1.送られたデータを保存
         
-        $data = $request['data'];
-        $name = $data['name'];
-        $body = $data['content'];
+        $data       = $request['data'];
+
+        $name       = $data['name'];
+        $body       = $data['content'];
 
         $post = new Post;
         // Log::debug($request);
-        $post->task_name = $name;
-        $post->task_body = $body;
+        $post->task_name  = $name;
+        $post->task_body  = $body;
+        $post->like_count = 0;
         $post->save();
         
         return "true"; 
+    }
+
+    public function saveLike(Request $request) {
+        $id = $request['data'];
+
+        $post = Post::where('id', $id)->first();
+        
+        if($post->like_count === "0"){
+            $post->like_count = "action";
+            $post->save();
+        } else {
+            $post->like_count = "0";
+            $post->save();
+        }
+        Log::debug($post);
+        return "true";
     }
 
     public function getAllTasks(Request $request) {
@@ -82,3 +100,4 @@ class ApiTestController extends Controller
     }
    
 }
+// Log::debug($request);

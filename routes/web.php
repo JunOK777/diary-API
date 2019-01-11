@@ -22,6 +22,7 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'api'], function ($router) {
     Route::get('addFavorite', 'ApiTestController@addFavorite');
     Route::get('getAllTasks', 'ApiTestController@getAllTasks');
     Route::get('deleteTask', 'ApiTestController@deleteTask');
-    Route::post('getLike', 'ApiTestController@getLike');
+    Route::post('saveTask', 'ApiTestController@saveTask');
+    Route::post('saveLike', 'ApiTestController@saveLike');
     Route::post('login', 'ApiTestController@login');
 });
