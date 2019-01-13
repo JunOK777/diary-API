@@ -17,12 +17,11 @@ Route::get('/', function () {
 
 Route::group(['middleware' => ['cors'], 'prefix' => 'api'], function ($router) { 
     Route::get("test", "ApiTestController@test");
-    Route::get('getFavorite', 'ApiTestController@getFavorite');
-    Route::get('removeFavorite', 'ApiTestController@removeFavorite');
-    Route::get('addFavorite', 'ApiTestController@addFavorite');
     Route::get('getAllTasks', 'ApiTestController@getAllTasks');
     Route::get('deleteTask', 'ApiTestController@deleteTask');
+    Route::post('sendSlack', 'ApiTestController@sendSlack');
     Route::post('saveTask', 'ApiTestController@saveTask');
-    Route::post('saveLike', 'ApiTestController@saveLike');
+    Route::post('saveCheck', 'ApiTestController@saveCheck');
+    Route::post('delTask', 'ApiTestController@delTask');
     Route::post('login', 'ApiTestController@login');
 });

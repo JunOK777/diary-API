@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFavoritesTable extends Migration
+class CreateMaintasksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateFavoritesTable extends Migration
      */
     public function up()
     {
-        Schema::create('favorites', function (Blueprint $table) {
+        Schema::create('maintasks', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('favorite');
+            $table->string('check_count')->nullable();
+            $table->string('task_body')->nullable();
+            $table->string('like_count')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ class CreateFavoritesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('favorites');
+        Schema::dropIfExists('maintasks');
     }
 }

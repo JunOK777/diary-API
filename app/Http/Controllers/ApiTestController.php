@@ -6,8 +6,8 @@ use ResponseBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\User;
-use App\Favorite;
-use App\Post;
+use App\Maintask;
+use App\Todaytask;
 
 
 class ApiTestController extends Controller
@@ -18,25 +18,13 @@ class ApiTestController extends Controller
             ["id" => "2", "title" => "bar"],
             ["id" => "3", "title" => "baz"]
         ];
-        return $testData;
-    }
-    public function getFavorite(Request $request) {
-        $a = Favorite::first();
-        $favorite = $a->favorite;
-        return $favorite;
-    }
-    public function removeFavorite(Request $request) {
-        $a = Favorite::first();
-        $a->favorite = "1";
-        $a->save();
-        return "true";
-    }
 
-    public function addFavorite(Request $request) {
-        $a = Favorite::first();
-        $a->favorite = "0";
-        $a->save();
-        return "true";
+        $slackApiKey = 'xoxb-391796256259-522279542450-yEsA0jRwErElzpIR3iUHQTRm'; //上で作成したAPIキー
+        $text = 'こんにちは';
+        $text = urlencode('投稿されたよ。' . $text);
+        $url = "https://slack.com/api/chat.postMessage?token=${slackApiKey}&channel=%23test&username=testbot&text=${text}&as_user=true";
+        file_get_contents($url);
+        return $testData;
     }
 
     public function login(Request $request) {
@@ -53,51 +41,76 @@ class ApiTestController extends Controller
     }
     public function saveTask(Request $request) {
         // 1.送られたデータを保存
-        
         $data       = $request['data'];
-
-        $name       = $data['name'];
         $body       = $data['content'];
 
-        $post = new Post;
-        // Log::debug($request);
-        $post->task_name  = $name;
+        $post = new Maintask;
         $post->task_body  = $body;
-        $post->like_count = 0;
+        $post->like_count = "active";
         $post->save();
+
+        $new_data = Maintask::all()->sortByDesc('id')->first();
+        $data = $new_data;
         
-        return "true"; 
+        return $data; 
     }
 
-    public function saveLike(Request $request) {
+    public function saveCheck(Request $request) {
         $id = $request['data'];
-
-        $post = Post::where('id', $id)->first();
+        Log::debug($id);
+        $post = Maintask::where('id', $id)->first();
         
-        if($post->like_count === "0"){
-            $post->like_count = "action";
+        if($post->like_count === "done"){
+            $post->like_count = "active";
             $post->save();
         } else {
-            $post->like_count = "0";
+            $post->like_count = "done";
             $post->save();
         }
-        Log::debug($post);
+        return "true";
+    }
+
+    public function delTask(Request $request) {
+        $id = $request['data'];
+        Log::debug($id);
+        $post = Maintask::where('id', $id)->first();
+        $post->delete();
+
         return "true";
     }
 
     public function getAllTasks(Request $request) {
 
-        $request = Post::all();
+        $request = Maintask::all();
         return $request; 
 
     }
     public function  deleteTask(Request $request) {
-        $post = Post::all()->sortByDesc('id')->first();
+        $post = Maintask::all()->sortByDesc('id')->first();
         $post->delete();
 
         return "true"; 
-
     }
+    public function  sendSlack(Request $request) {
+        $tasks = Maintask::where('like_count', 'active')->get();
+        $data = null;
+        foreach($tasks as $task){
+            $new_task = "・".$task->task_body."\n";
+            $data = $data.$new_task;
+        }
+        $data = "Jun\n".$data;
+
+        $slackApiKey = 'xoxb-391796256259-522279542450-yEsA0jRwErElzpIR3iUHQTRm';
+        $text = urlencode($data);
+        $url = "https://slack.com/api/chat.postMessage?token=${slackApiKey}&channel=%23test&username=testbot&text=${text}&as_user=true";
+        file_get_contents($url);
+
+
+
+        return "true"; 
+    }
+
+
    
 }
 // Log::debug($request);

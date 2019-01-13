@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Favorite extends Model
+class Todaytask extends Model
 {
     protected $fillable = [
-        'favorite'
+        'task-name', 'task-body', 'like-count'
     ];
 }
