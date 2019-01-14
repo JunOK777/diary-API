@@ -92,15 +92,24 @@ class ApiTestController extends Controller
         return "true"; 
     }
     public function  sendSlack(Request $request) {
-        $tasks = Maintask::where('like_count', 'active')->get();
-        $data = null;
-        foreach($tasks as $task){
-            $new_task = "・".$task->task_body."\n";
-            $data = $data.$new_task;
+        $active_tasks = Maintask::where('like_count', 'active')->get();
+        $done_tasks   = Maintask::where('like_count', 'done')->get();
+        
+        $active_data = null;
+        $done_data   = null;
+        
+        foreach($active_tasks as $active_task){
+            $new_task = "・".$active_task->task_body."\n";
+            $active_data = $active_data.$new_task;
         }
-        $data = "Jun\n".$data;
+        foreach($done_tasks as $done_task){
+            $new_task = "・ ~".$done_task->task_body."~\n";
+            $done_data = $done_data.$new_task;
+        }
+        $data = "Jun\n".$done_data.$active_data;
+        Log::debug($data);
 
-        $slackApiKey = 'xoxb-391796256259-522279542450-yEsA0jRwErElzpIR3iUHQTRm';
+        $slackApiKey = 'xoxb-391796256259-522279542450-PnTZLbW8c4bhe6keEtgafMlO';
         $text = urlencode($data);
         $url = "https://slack.com/api/chat.postMessage?token=${slackApiKey}&channel=%23test&username=testbot&text=${text}&as_user=true";
         file_get_contents($url);
