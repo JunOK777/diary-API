@@ -109,7 +109,7 @@ class ApiTestController extends Controller
         $data = "Jun\n".$done_data.$active_data;
         Log::debug($data);
 
-        $slackApiKey = 'xoxb-391796256259-522279542450-PnTZLbW8c4bhe6keEtgafMlO';
+        $slackApiKey = ''; //enter your Slack Token password in this space ''.
         $text = urlencode($data);
         $url = "https://slack.com/api/chat.postMessage?token=${slackApiKey}&channel=%23test&username=testbot&text=${text}&as_user=true";
         file_get_contents($url);
